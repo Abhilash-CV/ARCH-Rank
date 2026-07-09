@@ -182,6 +182,7 @@ if candidate_file and marks_file:
         "Math Score": df["MATH_MARK"],
         "TOTALMARK": df["TOTALMARK"],
         "TOTALMAXMARK": df["TOTALMAXMARK"],
+        "Qualifying Score (/200)": df["QUALIFY_SCORE"].round(2),
         "DOB": df["DOB"].dt.strftime("%d-%m-%Y"),
         "Final Score": df["FINAL_SCORE"]
     })
