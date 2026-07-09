@@ -127,7 +127,7 @@ if candidate_file and marks_file:
         by=[
             "FINAL_SCORE",
             "NATA_SCORE",
-            "MATH_MARK",
+            "MATH_PERCENT",
             "DOB",
             "APPLNO"
         ],
@@ -151,6 +151,8 @@ if candidate_file and marks_file:
         "DOB",
         "NATA_SCORE",
         "MATH_MARK",
+        "MATH_MAX",
+        "MATH_PERCENT",
         "TOTALMARK",
         "TOTALMAXMARK",
         "QUALIFY_SCORE",
@@ -190,6 +192,8 @@ if candidate_file and marks_file:
         "Candidate": df["Name"],
         "NATA Score": df["NATA_SCORE"],
         "Math Score": df["MATH_MARK"],
+        "Math Max": df["MATH_MAX"],
+        "Math %": df["MATH_PERCENT"],
         "TOTALMARK": df["TOTALMARK"],
         "TOTALMAXMARK": df["TOTALMAXMARK"],
         "Qualifying Score (/200)": df["QUALIFY_SCORE"].round(2),
