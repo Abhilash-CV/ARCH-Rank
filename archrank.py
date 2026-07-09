@@ -88,9 +88,9 @@ if candidate_file and marks_file:
     ]:
         df[c] = pd.to_numeric(df[c], errors="coerce")
 
-    # Mathematics mark
+    # Mathematics mark (subject mark rounded to 4 decimal places)
     df["MATH_MARK"] = df.apply(find_math_mark, axis=1)
-    df["MATH_MARK"] = pd.to_numeric(df["MATH_MARK"], errors="coerce")
+    df["MATH_MARK"] = pd.to_numeric(df["MATH_MARK"], errors="coerce").round(4)
 
     # DOB
     df["DOB"] = pd.to_datetime(
@@ -98,19 +98,7 @@ if candidate_file and marks_file:
         dayfirst=True,
         errors="coerce"
     )
-    # -----------------------------
-# Recalculate TOTALMARK from Subject Marks
-# -----------------------------
-    subject_marks = []
-    
-    for i in range(1, 10):
-        mark_col = f"SUB{i}_MARK"
-    
-        if mark_col in df.columns:
-            df[mark_col] = pd.to_numeric(df[mark_col], errors="coerce").fillna(0)
-            subject_marks.append(mark_col)
-    
-    df["TOTALMARK"] = df[subject_marks].sum(axis=1).round(4)
+
     # Qualifying Score out of 200
     df["QUALIFY_SCORE"] = (
         df["TOTALMARK"] /
@@ -122,7 +110,7 @@ if candidate_file and marks_file:
     df["FINAL_SCORE"] = (
         df["NATA_SCORE"] +
         df["QUALIFY_SCORE"]
-    ).round(2)
+    ).round(4)
 
     # Sort according to prospectus
     df = df.sort_values(
@@ -201,12 +189,12 @@ if candidate_file and marks_file:
 
 # Export to Excel
     output = BytesIO()
-    
+
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
         output_df.to_excel(writer, index=False, sheet_name="BArch Rank List")
-    
+
     st.dataframe(output_df, use_container_width=True)
-    
+
     st.download_button(
         label="📥 Download Rank List",
         data=output.getvalue(),
