@@ -174,15 +174,15 @@ if candidate_file and marks_file:
 
     # Excel Output
     # Create Output DataFrame
-output_df = pd.DataFrame({
-    "Rank": df["RANK"],
-    "ApplNo": df["APPLNO"],
-    "Candidate": df["Name"],
-    "NATA Score": df["NATA_SCORE"],
-    "Math Score": df["MATH_MARK"],
-    "DOB": df["DOB"].dt.strftime("%d-%m-%Y"),
-    "Final Score": df["FINAL_SCORE"]
-})
+    output_df = pd.DataFrame({
+        "Rank": df["RANK"],
+        "ApplNo": df["APPLNO"],
+        "Candidate": df["Name"],
+        "NATA Score": df["NATA_SCORE"],
+        "Math Score": df["MATH_MARK"],
+        "DOB": df["DOB"].dt.strftime("%d-%m-%Y"),
+        "Final Score": df["FINAL_SCORE"]
+    })
 
 # Export to Excel
     output = BytesIO()
