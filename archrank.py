@@ -180,6 +180,8 @@ if candidate_file and marks_file:
         "Candidate": df["Name"],
         "NATA Score": df["NATA_SCORE"],
         "Math Score": df["MATH_MARK"],
+        "TOTALMARK": df["TOTALMARK"],
+        "TOTALMAXMARK": df["TOTALMAXMARK"],
         "DOB": df["DOB"].dt.strftime("%d-%m-%Y"),
         "Final Score": df["FINAL_SCORE"]
     })
