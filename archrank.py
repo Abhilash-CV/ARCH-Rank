@@ -98,13 +98,25 @@ if candidate_file and marks_file:
         dayfirst=True,
         errors="coerce"
     )
-
+    # -----------------------------
+# Recalculate TOTALMARK from Subject Marks
+# -----------------------------
+    subject_marks = []
+    
+    for i in range(1, 10):
+        mark_col = f"SUB{i}_MARK"
+    
+        if mark_col in df.columns:
+            df[mark_col] = pd.to_numeric(df[mark_col], errors="coerce").fillna(0)
+            subject_marks.append(mark_col)
+    
+    df["TOTALMARK"] = df[subject_marks].sum(axis=1).round(4)
     # Qualifying Score out of 200
     df["QUALIFY_SCORE"] = (
         df["TOTALMARK"] /
         df["TOTALMAXMARK"] *
         200
-    ).round(2)
+    ).round(4)
 
     # Final Score out of 400
     df["FINAL_SCORE"] = (
