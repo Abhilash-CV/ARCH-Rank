@@ -31,12 +31,16 @@ def find_math_mark(row):
     for i in range(1, 10):
         sub = f"SUB{i}_NAME"
         mark = f"SUB{i}_MARK"
+        maxm = f"SUB{i}_MAX"
 
         if sub in row.index:
             if pd.notna(row[sub]):
                 if str(row[sub]).strip().upper() == "MATHEMATICS":
-                    return row[mark]
-    return np.nan
+                    return pd.Series({
+                        "MATH_MARK": row[mark],
+                        "MATH_MAX": row[maxm] if maxm in row.index else np.nan
+                    })
+    return pd.Series({"MATH_MARK": np.nan, "MATH_MAX": np.nan})
 
 
 if candidate_file and marks_file:
@@ -88,9 +92,15 @@ if candidate_file and marks_file:
     ]:
         df[c] = pd.to_numeric(df[c], errors="coerce")
 
-    # Mathematics mark (subject mark rounded to 4 decimal places)
-    df["MATH_MARK"] = df.apply(find_math_mark, axis=1)
-    df["MATH_MARK"] = pd.to_numeric(df["MATH_MARK"], errors="coerce").round(4)
+    # Mathematics mark + its max mark, normalized to a common /100 scale
+    # (subjects are not all out of the same total, e.g. 200 vs 100,
+    # so raw marks cannot be compared directly for the tie-break)
+    math_df = df.apply(find_math_mark, axis=1)
+    df["MATH_MARK"] = pd.to_numeric(math_df["MATH_MARK"], errors="coerce").round(4)
+    df["MATH_MAX"] = pd.to_numeric(math_df["MATH_MAX"], errors="coerce").round(4)
+    df["MATH_PERCENT"] = (
+        df["MATH_MARK"] / df["MATH_MAX"] * 100
+    ).round(4)
 
     # DOB
     df["DOB"] = pd.to_datetime(
@@ -104,13 +114,13 @@ if candidate_file and marks_file:
         df["TOTALMARK"] /
         df["TOTALMAXMARK"] *
         200
-    ).round(4)
+    ).round(2)
 
     # Final Score out of 400
     df["FINAL_SCORE"] = (
         df["NATA_SCORE"] +
         df["QUALIFY_SCORE"]
-    ).round(4)
+    ).round(2)
 
     # Sort according to prospectus
     df = df.sort_values(
