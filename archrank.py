@@ -173,10 +173,31 @@ if candidate_file and marks_file:
     c3.metric("Lowest Score", round(df["FINAL_SCORE"].min(), 2))
 
     # Excel Output
-    output = BytesIO()
+    # Create Output DataFrame
+output_df = pd.DataFrame({
+    "Rank": df["RANK"],
+    "ApplNo": df["APPLNO"],
+    "Candidate": df["Name"],
+    "NATA Score": df["NATA_SCORE"],
+    "Math Score": df["MATH_MARK"],
+    "DOB": df["DOB"].dt.strftime("%d-%m-%Y"),
+    "Final Score": df["FINAL_SCORE"]
+})
 
+# Export to Excel
+    output = BytesIO()
+    
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
-        df.to_excel(writer, index=False, sheet_name="RankList")
+        output_df.to_excel(writer, index=False, sheet_name="BArch Rank List")
+    
+    st.dataframe(output_df, use_container_width=True)
+    
+    st.download_button(
+        label="📥 Download Rank List",
+        data=output.getvalue(),
+        file_name="KEAM2026_BARCH_RANKLIST.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
 
     st.download_button(
         label="Download Rank List",
