@@ -102,6 +102,18 @@ if candidate_file and marks_file:
     ]:
         df[c] = pd.to_numeric(df[c], errors="coerce")
 
+    # Diploma marks (used as fallback where TOTALMARK/TOTALMAXMARK are blank,
+    # e.g. diploma-stream candidates with no subject-wise marks)
+    if "Diploma_Mark" in df.columns:
+        df["Diploma_Mark"] = pd.to_numeric(df["Diploma_Mark"], errors="coerce")
+    else:
+        df["Diploma_Mark"] = np.nan
+
+    if "Diploma_MaxMark" in df.columns:
+        df["Diploma_MaxMark"] = pd.to_numeric(df["Diploma_MaxMark"], errors="coerce")
+    else:
+        df["Diploma_MaxMark"] = np.nan
+
     # Mathematics mark + its max mark, normalized to a common /100 scale
     # (subjects are not all out of the same total, e.g. 200 vs 100,
     # so raw marks cannot be compared directly for the tie-break)
@@ -120,9 +132,20 @@ if candidate_file and marks_file:
     )
 
     # Qualifying Score out of 200
+    # Use TOTALMARK/TOTALMAXMARK where available; fall back to Diploma
+    # marks for diploma-stream candidates who have no subject-wise totals.
+    use_diploma = (
+        df["TOTALMARK"].isna() |
+        df["TOTALMAXMARK"].isna() |
+        (df["TOTALMAXMARK"] == 0)
+    )
+
+    qualify_mark = df["TOTALMARK"].where(~use_diploma, df["Diploma_Mark"])
+    qualify_max = df["TOTALMAXMARK"].where(~use_diploma, df["Diploma_MaxMark"])
+
     df["QUALIFY_SCORE"] = (
-        df["TOTALMARK"] /
-        df["TOTALMAXMARK"] *
+        qualify_mark /
+        qualify_max *
         200
     ).round(2)
 
