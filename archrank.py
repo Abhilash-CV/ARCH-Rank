@@ -40,6 +40,16 @@ def find_math_mark(row):
                         "MATH_MARK": row[mark],
                         "MATH_MAX": row[maxm] if maxm in row.index else np.nan
                     })
+
+    # No Mathematics subject found - fall back to Diploma marks
+    if "Diploma_Mark" in row.index and "Diploma_MaxMark" in row.index:
+        if pd.notna(row["Diploma_Mark"]) and pd.notna(row["Diploma_MaxMark"]):
+            if float(row["Diploma_MaxMark"]) > 0:
+                return pd.Series({
+                    "MATH_MARK": row["Diploma_Mark"],
+                    "MATH_MAX": row["Diploma_MaxMark"]
+                })
+
     return pd.Series({"MATH_MARK": np.nan, "MATH_MAX": np.nan})
 
 
